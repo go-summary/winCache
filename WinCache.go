@@ -3,6 +3,7 @@ package WinCache
 import "C"
 import (
 	"./byteView"
+	mainCache "./cache"
 	"fmt"
 	"log"
 	"sync"
@@ -22,7 +23,7 @@ func (f GetterFunc) Get(key string) ([]byte, error){
 type Group struct {
 	name      string
 	getter    Getter
-	mainCache cache
+	mainCache *mainCache.Cache
 }
 
 var (
@@ -33,14 +34,14 @@ var (
 // NewGroup 创建一个新的group实例
 func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 	if getter == nil {
-		panic("nil Getter")
+		panic("Getter is nil")
 	}
 	mu.Lock()
 	defer mu.Unlock()
 	g := &Group{
 		name:      name,
 		getter:    getter,
-		mainCache: cache{cacheBytes: cacheBytes},
+		mainCache: mainCache.NewMainCache(cacheBytes),
 	}
 	groups[name] = g
 	return g
@@ -57,20 +58,22 @@ func GetGroup(name string) *Group {
 // Get 从缓存中获取对应的值
 func (g *Group) Get(key string) (byteView.ByteView, error) {
 	if key == "" {
-		return byteView.ByteView{}, fmt.Errorf("key is required")
+		return byteView.ByteView{}, fmt.Errorf("key is nil")
 	}
 
-	if v, ok := g.mainCache.get(key); ok {
-		log.Println("[GeeCache] hit")
+	if v, ok := g.mainCache.Get(key); ok {
+		log.Println("Cache-hit")
 		return v, nil
 	}
 	return g.load(key)
 }
 
+// 加载
 func (g *Group) load(key string) (value byteView.ByteView, err error) {
 	return g.getLocally(key)
 }
 
+// 本地获取
 func (g *Group) getLocally(key string) (byteView.ByteView, error) {
 	bytes, err := g.getter.Get(key)
 	if err != nil {
@@ -83,7 +86,7 @@ func (g *Group) getLocally(key string) (byteView.ByteView, error) {
 }
 
 func (g *Group) populateCache(key string, value byteView.ByteView) {
-	g.mainCache.save(key, value)
+	g.mainCache.Save(key, value)
 }
 
 
