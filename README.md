@@ -2,7 +2,8 @@
 一个用go语言书写的cachedb，操作类似redis. <br>
 one cache using go.<br>
 <br>
-## 说明(Description)：<br>
+
+说明(Description)：<br>
 目前是通过一致性算法通过hash选择节点，<br>
 Currently, nodes are selected through hash through consensus algorithm,<br>
 再hash选择对应的group，<br>
