@@ -1,9 +1,9 @@
-package WinCache
+package localWinCache
 
 import "C"
 import (
-	"./byteView"
-	mainCache "./cache"
+	"../byteView"
+	mainCache "../cache"
 	"fmt"
 	"log"
 	"sync"

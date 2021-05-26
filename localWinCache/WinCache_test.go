@@ -1,4 +1,4 @@
-package WinCache
+package localWinCache
 
 import (
 	"reflect"
