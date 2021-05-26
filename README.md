@@ -1,2 +1,3 @@
 # winCache
-一个用go语言书写的简单的cachedb，操作类似redis，目前只是单纯用来了解go语言机制
+一个用go语言书写的cachedb，操作类似redis. <br>
+one cache using go.
