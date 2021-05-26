@@ -2,7 +2,7 @@ package localWinCache
 
 import "C"
 import (
-	"../byteView"
+	"../valueByte"
 	mainCache "../cache"
 	"fmt"
 	"log"
@@ -56,9 +56,9 @@ func GetGroup(name string) *Group {
 }
 
 // Get 从缓存中获取对应的值
-func (g *Group) Get(key string) (byteView.ByteView, error) {
+func (g *Group) Get(key string) (valueByte.ByteView, error) {
 	if key == "" {
-		return byteView.ByteView{}, fmt.Errorf("key is nil")
+		return valueByte.ByteView{}, fmt.Errorf("key is nil")
 	}
 
 	if v, ok := g.mainCache.Get(key); ok {
@@ -69,23 +69,23 @@ func (g *Group) Get(key string) (byteView.ByteView, error) {
 }
 
 // 加载
-func (g *Group) load(key string) (value byteView.ByteView, err error) {
+func (g *Group) load(key string) (value valueByte.ByteView, err error) {
 	return g.getLocally(key)
 }
 
 // 本地获取
-func (g *Group) getLocally(key string) (byteView.ByteView, error) {
+func (g *Group) getLocally(key string) (valueByte.ByteView, error) {
 	bytes, err := g.getter.Get(key)
 	if err != nil {
-		return byteView.ByteView{}, err
+		return valueByte.ByteView{}, err
 
 	}
-	value := byteView.ByteView{B: byteView.CloneBytes(bytes)}
+	value := valueByte.ByteView{B: valueByte.CloneBytes(bytes)}
 	g.populateCache(key, value)
 	return value, nil
 }
 
-func (g *Group) populateCache(key string, value byteView.ByteView) {
+func (g *Group) populateCache(key string, value valueByte.ByteView) {
 	g.mainCache.Save(key, value)
 }
 

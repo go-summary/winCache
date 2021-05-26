@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"../byteView"
 	"../lru"
+	"../valueByte"
 	"sync"
 )
 
@@ -19,7 +19,7 @@ func NewMainCache(cacheBytes int64) *Cache {
 	}
 }
 
-func (c *Cache) Save(key string, value byteView.ByteView) {
+func (c *Cache) Save(key string, value valueByte.ValueByte) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.lru == nil {
@@ -29,14 +29,14 @@ func (c *Cache) Save(key string, value byteView.ByteView) {
 	c.lru.Save(key, value)
 }
 
-func (c *Cache) Get(key string) (value byteView.ByteView, ok bool) {
+func (c *Cache) Get(key string) (value valueByte.ValueByte, ok bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock() //精简代码，使其在函数执行完之间执行此行代码
 	if c.lru == nil {
 		return
 	}
 	if v, ok := c.lru.Get(key); ok {
-		return v.(byteView.ByteView), ok
+		return v.(valueByte.ValueByte), ok
 	}
 	return
 }
